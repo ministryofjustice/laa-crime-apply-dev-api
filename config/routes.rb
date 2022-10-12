@@ -4,7 +4,7 @@ class ApiConstraint
   def initialize; end
 
   def matches?(_request)
-    Rails.env.development?
+    Rails.env.development? || Rails.env.test?
   end
 end
 

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'lib/laa/crime/apply/dev/api/version'
+require_relative 'lib/laa_crime_apply_dev_api/version'
 
 Gem::Specification.new do |spec|
-  spec.name        = 'laa-crime-apply-dev-api'
-  spec.version     = Laa::Crime::Apply::Dev::Api::VERSION
+  spec.name        = 'laa_crime_apply_dev_api'
+  spec.version     = LaaCrimeApplyDevApi::VERSION
   spec.authors     = ['timpeat']
   spec.email       = ['tim.peat@digital.justice.gov.uk']
   spec.homepage    = 'https://github.com/ministryofjustice/laa-crime-apply-dev-api'
@@ -25,4 +25,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'dry-struct', '>= 1.0.0'
   spec.add_dependency 'rails', '>= 7.0.3'
+
+  spec.add_development_dependency 'mocha'
+  spec.add_development_dependency 'sqlite3'
 end
