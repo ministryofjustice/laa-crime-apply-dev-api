@@ -2,38 +2,32 @@
 
 module Api
   module V1
+    # Temporary utility api controller to allow integration between Crime Apply
+    # and Review during development
     class ApplicationsController < ActionController::API
-      LIMIT = 100
+      LIMIT = 50
 
-      # list any application that satisfies the schema
+      # Omits any records that do not satisfy schema
+      #
       def index
-        render json: resources
+        crime_apps = CrimeApplication.all.limit(LIMIT)
+
+        render json: ApplicationSerializer.collection(crime_apps).select(&:valid?)
       end
 
-      private
+      # Shows schema errors if they exist
+      #
+      def show
+        application = ApplicationSerializer.new(CrimeApplication.find(params[:id]))
 
-      def resources
-        CrimeApplication.all.limit(LIMIT).filter_map do |application|
-          build_from_crime_application(application)
-
-        # Ignore applications that do not satisfy schema
-        rescue Dry::Struct::Error => e
-          false
+        if application.valid?
+          render json: application
+        else
+          render json: application, status: 451
         end
-      end
-
-      def build_from_crime_application(crime_app)
-        LaaCrimeApplyDevApi::ApplicationResource.new(
-          application_start_date: crime_app.updated_at,
-          client_details: {
-            client: {
-              first_name: crime_app.applicant&.first_name,
-              last_name: crime_app.applicant&.last_name,
-              national_insurance_number: crime_app.applicant&.nino
-            }
-          },
-          application_reference: "LAA-#{crime_app.id[0..5]}"
-        )
+      rescue ActiveRecord::RecordNotFound
+        head :not_found
+      else
       end
     end
   end

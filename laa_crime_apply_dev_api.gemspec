@@ -20,12 +20,16 @@ Gem::Specification.new do |spec|
   spec.metadata['source_code_uri'] = 'https://github.com/ministryofjustice/laa-crime-apply-dev-api'
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
+    Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
   end
 
-  spec.add_dependency 'dry-struct', '>= 1.0.0'
-  spec.add_dependency 'rails', '>= 7.0.3'
+  spec.required_ruby_version = '>= 3.0'
+
+  spec.add_dependency 'dry-schema', '>= 1.10'
+  spec.add_dependency 'jbuilder', '>= 2.11'
+  spec.add_dependency 'rails', '>= 7.0'
 
   spec.add_development_dependency 'mocha'
+  spec.add_development_dependency 'pry'
   spec.add_development_dependency 'sqlite3'
 end
