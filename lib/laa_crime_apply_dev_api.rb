@@ -26,6 +26,30 @@ module LaaCrimeApplyDevApi
         required(:national_insurance_number).value Types::String
       end
     end
+
+    required(:case_details).hash do
+      required(:case_type).value Types::String
+      # required(:court_type).value Types::String
+      required(:co_defendants).array(:hash) do
+        required(:conflict_of_interest).maybe(:bool)
+        required(:first_name).value Types::String
+        required(:last_name).value Types::String
+      end
+
+      required(:offences).array(:hash) do
+        required(:class).value Types::String
+        required(:date).value Types::String
+        required(:name).value Types::String
+      end
+
+      required(:court_name).value Types::String
+      required(:urn).value Types::String
+
+      required(:interests_of_justice).array(:hash) do
+        required(:reason).value Types::String
+        required(:type).value Types::String
+      end
+    end
   end
 
   ApplicationListItemSchema = Dry::Schema.Params do
@@ -39,49 +63,6 @@ module LaaCrimeApplyDevApi
       end
     end
   end
-  #
-  # Prototype Api Schema
-  #
-  # {
-  #  "application_start_date": "2022-09-01T10:55:20.284Z",
-  #  "client_details": {
-  #   "client": {
-  #    "address": {
-  #     "address_line_one": "14 Real Street",
-  #     "address_line_two": "Sometown",
-  #     "county": "Hampshire",
-  #     "postcode": "AB1 2CD"
-  #    },
-  #    "first_name": "Janet",
-  #    "last_name": "Dean",
-  #    "national_insurance_number": "AA1234490D"
-  #   },
-  #   "means": {
-  #    "passporting": true
-  #   },
-  #   "on_remand": false,
-  #   "partner_conflict_of_interest": false,
-  #   "partner_role_in_case": "none"
-  #  },
-  #  "case_details": {
-  #   "case_type": "summary_only",
-  #   "court_type": "magistrates",
-  #   "co_defendants": [
-  #    {
-  #     "conflict_of_interest": false,
-  #     "first_name": "Jill",
-  #     "last_name": "Brown"
-  #    }
-  #   ],
-  #   "offences": [
-  #    {
-  #     "class": "c",
-  #     "date": "2020-06-22",
-  #     "name": "Assault"
-  #    }
-  #   ],
-  #   "URN": "123456"
-  #  },
   #  "interests_of_justice": [
   #   {
   #    "reason": "Client likely to receive custodial sentence",

@@ -46,6 +46,7 @@ class ApplicationSerializer
       json.application_reference "LAA-#{crime_app.id[0..5]}"
       json.application_start_date crime_app.updated_at.to_s
       json.client_details client_details_to_builder
+      json.case_details case_details_to_builder if @include_details
     end
   end
 
@@ -59,6 +60,33 @@ class ApplicationSerializer
           json.address address_to_builder
         end
       end
+    end
+  end
+
+  def case_details_to_builder
+    Jbuilder.new do |json|
+      json.case_type crime_app.case.case_type
+      json.co_defendants(crime_app.case.codefendants) do |cd|
+        json.first_name cd.first_name
+        json.last_name cd.last_name
+        json.conflict_of_interest cd.conflict_of_interest
+      end
+
+      json.offences(crime_app.case.charges) do |charge|
+        json.name charge.offence_name
+        json.date '2001-01-01'
+        json.class 'CONFLICT IN DATA MODEL'
+      end
+
+      fake_iojs = [OpenStruct.new(reason: 'Loss of liberty', type: 'liberty')]
+
+      json.interests_of_justice(fake_iojs) do |ioj|
+        json.reason ioj.reason
+        json.type ioj.type
+      end
+
+      json.court_name crime_app.case.hearing_court_name
+      json.urn crime_app.case.urn
     end
   end
 

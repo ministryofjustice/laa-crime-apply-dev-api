@@ -16,7 +16,8 @@ class NavigationTest < ActionDispatch::IntegrationTest
     @crime_application = stub(
       id: @uuid,
       updated_at: 1.day.ago,
-      applicant: applicant
+      applicant: applicant,
+      case: OpenStruct.new
     )
   end
 
