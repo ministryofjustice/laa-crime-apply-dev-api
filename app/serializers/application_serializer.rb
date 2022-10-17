@@ -40,6 +40,8 @@ class ApplicationSerializer
 
   private
 
+  attr_reader :crime_app
+
   def to_builder
     Jbuilder.new do |json|
       json.id crime_app.id
@@ -65,28 +67,12 @@ class ApplicationSerializer
 
   def case_details_to_builder
     Jbuilder.new do |json|
-      json.case_type crime_app.case.case_type
-      json.co_defendants(crime_app.case.codefendants) do |cd|
-        json.first_name cd.first_name
-        json.last_name cd.last_name
-        json.conflict_of_interest cd.conflict_of_interest
-      end
-
-      json.offences(crime_app.case.charges) do |charge|
-        json.name charge.offence_name
-        json.date '2001-01-01'
-        json.class 'CONFLICT IN DATA MODEL'
-      end
-
-      fake_iojs = [OpenStruct.new(reason: 'Loss of liberty', type: 'liberty')]
-
-      json.interests_of_justice(fake_iojs) do |ioj|
-        json.reason ioj.reason
-        json.type ioj.type
-      end
-
-      json.court_name crime_app.case.hearing_court_name
-      json.urn crime_app.case.urn
+      json.court_name kase.hearing_court_name
+      json.urn kase.urn
+      json.case_type kase.case_type
+      json.co_defendants(co_defendants, :first_name, :last_name, :conflict_of_interest)
+      json.interests_of_justice(iojs, :reason, :type)
+      json.offences(offences, :name, :date, :class)
     end
   end
 
@@ -95,12 +81,29 @@ class ApplicationSerializer
       json.address_line_one address.address_line_one
       json.address_line_two address.address_line_two
       json.postcode address.postcode
-      # NOTE: beware typo on Crime Apply country/county
       json.county address.country
     end
   end
 
-  attr_reader :crime_app
+  def kase
+    crime_app.case
+  end
+
+  def co_defendants
+    kase.codefendants
+  end
+
+  # TODO: update when ready
+  def iojs
+    [OpenStruct.new(reason: 'Loss of liberty', type: 'liberty')]
+  end
+
+  # TODO: update when conflict btn schema and apply resolved
+  def offences
+    kase.charges.map do |charge|
+      OpenStruct.new(name: charge.offence_name, date: '2001-01-01', class: 'CONFLICT IN DATA MODEL')
+    end
+  end
 
   def address
     crime_app.applicant&.home_address
