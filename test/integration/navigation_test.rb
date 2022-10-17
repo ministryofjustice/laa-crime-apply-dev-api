@@ -17,7 +17,7 @@ class NavigationTest < ActionDispatch::IntegrationTest
       id: @uuid,
       updated_at: 1.day.ago,
       applicant: applicant,
-      case: OpenStruct.new
+      case: OpenStruct.new(codefendants: [], charges: [])
     )
   end
 

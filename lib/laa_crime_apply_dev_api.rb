@@ -13,6 +13,47 @@ module LaaCrimeApplyDevApi
     required(:postcode).value(Types::String)
   end
 
+  CoDefendantSchema = Dry::Schema.Params do
+    required(:conflict_of_interest).maybe(:bool)
+    required(:first_name).value Types::String
+    required(:last_name).value Types::String
+  end
+
+  OffenceSchema = Dry::Schema.Params do
+    required(:class).value Types::String
+    required(:date).value Types::String
+    required(:name).value Types::String
+  end
+
+  InterestOfJusticeSchema = Dry::Schema.Params do
+    required(:reason).value Types::String
+    required(:type).value Types::String
+  end
+
+  CaseDetailsSchema = Dry::Schema.Params do
+    required(:case_type).value Types::String
+    # required(:court_type).value Types::String
+    required(:co_defendants).array(CoDefendantSchema)
+    required(:offences).array(OffenceSchema)
+
+    required(:court_name).value Types::String
+    required(:urn).value Types::String
+
+    required(:interests_of_justice).array(InterestOfJusticeSchema)
+  end
+
+  ApplicationListItemSchema = Dry::Schema.Params do
+    required(:id).value(Types::Uuid)
+    required(:application_reference).value(Types::CrimeApplicationReference)
+    required(:application_start_date).value(Types::DateTime)
+    required(:client_details).hash do
+      required(:client).hash do
+        required(:first_name).value Types::String
+        required(:last_name).value Types::String
+      end
+    end
+  end
+
   ApplicationSchema = Dry::Schema.Params do
     required(:id).value(Types::Uuid)
     required(:application_reference).value(Types::CrimeApplicationReference)
@@ -27,41 +68,7 @@ module LaaCrimeApplyDevApi
       end
     end
 
-    required(:case_details).hash do
-      required(:case_type).value Types::String
-      # required(:court_type).value Types::String
-      required(:co_defendants).array(:hash) do
-        required(:conflict_of_interest).maybe(:bool)
-        required(:first_name).value Types::String
-        required(:last_name).value Types::String
-      end
-
-      required(:offences).array(:hash) do
-        required(:class).value Types::String
-        required(:date).value Types::String
-        required(:name).value Types::String
-      end
-
-      required(:court_name).value Types::String
-      required(:urn).value Types::String
-
-      required(:interests_of_justice).array(:hash) do
-        required(:reason).value Types::String
-        required(:type).value Types::String
-      end
-    end
-  end
-
-  ApplicationListItemSchema = Dry::Schema.Params do
-    required(:id).value(Types::Uuid)
-    required(:application_reference).value(Types::CrimeApplicationReference)
-    required(:application_start_date).value(Types::DateTime)
-    required(:client_details).hash do
-      required(:client).hash do
-        required(:first_name).value Types::String
-        required(:last_name).value Types::String
-      end
-    end
+    required(:case_details).hash(CaseDetailsSchema)
   end
   #  "interests_of_justice": [
   #   {
