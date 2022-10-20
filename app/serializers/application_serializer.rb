@@ -3,9 +3,8 @@
 require 'jbuilder'
 # Serialize Crime Apply data in line with prototype data api
 class ApplicationSerializer
-  def initialize(crime_application, exclude_details: false)
+  def initialize(crime_application)
     @crime_app = crime_application
-    @include_details = !exclude_details
     @result = schema.call(to_builder.attributes!)
   end
 
@@ -22,19 +21,12 @@ class ApplicationSerializer
   end
 
   def schema
-    if @include_details
-      LaaCrimeApplyDevApi::ApplicationSchema
-    else
-      LaaCrimeApplyDevApi::ApplicationListItemSchema
-    end
+    LaaCrimeApplyDevApi::ApplicationSchema
   end
 
   class << self
-    # Returns a collection of serialized crime applications.
-    # Details are omitted by default.
-    #
-    def collection(crime_apps, include_details: false)
-      crime_apps.map { |ca| new(ca, exclude_details: !include_details) }
+    def collection(crime_apps)
+      crime_apps.map { |ca| new(ca) }
     end
   end
 
@@ -49,7 +41,25 @@ class ApplicationSerializer
       json.application_start_date crime_app.updated_at.to_s
       json.submission_date crime_app.updated_at.to_s
       json.client_details client_details_to_builder
-      json.case_details case_details_to_builder if @include_details
+      json.case_details case_details_to_builder
+      json.interests_of_justice(iojs_as_an_array, :reason, :type)
+    end
+  end
+
+  # TODO: discuss IoJ data model with Apply team
+  def iojs_as_an_array
+    ioj_obj = kase&.ioj
+
+    return [] unless ioj_obj
+
+    ioj_obj.types.filter_map do |set_types|
+      # TODO: fix typos on apply
+      case set_types
+      when 'loss_of_livelyhood'
+        set_types = 'loss_of_livelihood'
+      end
+
+      OpenStruct.new(type: set_types, reason: ioj_obj.public_send("#{set_types}_justification")) unless set_types.empty?
     end
   end
 
@@ -58,10 +68,14 @@ class ApplicationSerializer
       json.client do
         json.first_name applicant&.first_name
         json.last_name applicant&.last_name
-        if @include_details
-          json.national_insurance_number applicant&.nino
-          json.address address_to_builder
-          json.date_of_birth applicant&.date_of_birth
+        json.national_insurance_number applicant&.nino
+        json.address address_to_builder(home_address)
+        json.date_of_birth applicant&.date_of_birth
+        json.telephone_number applicant&.telephone_number
+        json.correspondence_address_type applicant&.correspondence_address_type
+
+        if applicant&.correspondence_address_type == 'other_address'
+          json.correspondence_address address_to_builder(correspondence_address)
         end
       end
     end
@@ -70,15 +84,16 @@ class ApplicationSerializer
   def case_details_to_builder
     Jbuilder.new do |json|
       json.court_name kase&.hearing_court_name
+      json.hearing_court_name kase&.hearing_court_name
+      json.hearing_date kase&.hearing_date
       json.urn kase&.urn
       json.case_type kase&.case_type
       json.co_defendants(co_defendants, :first_name, :last_name, :conflict_of_interest)
-      json.interests_of_justice(iojs, :reason, :type)
       json.offences(offences, :name, :date, :class)
     end
   end
 
-  def address_to_builder
+  def address_to_builder(address)
     Jbuilder.new do |json|
       json.address_line_one address&.address_line_one
       json.address_line_two address&.address_line_two
@@ -97,22 +112,23 @@ class ApplicationSerializer
     kase.codefendants
   end
 
-  # TODO: update when ready
-  def iojs
-    [OpenStruct.new(reason: 'Loss of liberty', type: 'liberty')]
-  end
-
   # TODO: update when conflict btn schema and apply resolved
   def offences
     return [] unless kase
 
     kase.charges.map do |charge|
-      OpenStruct.new(name: charge.offence_name, date: '2001-01-01', class: 'CONFLICT IN DATA MODEL')
+      charge = ChargePresenter.present(charge)
+      # TODO: work out what's going on with offence dates?
+      OpenStruct.new(name: charge.offence_name, date: charge.offence_dates.first, class: charge.offence_class)
     end
   end
 
-  def address
+  def home_address
     crime_app.applicant&.home_address
+  end
+
+  def correspondence_address
+    crime_app.applicant&.correspondence_address
   end
 
   def applicant
