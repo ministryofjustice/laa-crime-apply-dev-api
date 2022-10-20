@@ -9,3 +9,5 @@ and Review in development.
 It uses a schema approximate to the prototype's schema available here:
 
 https://crime-apply-api.s3.eu-west-2.amazonaws.com/index.html
+
+https://raw.githubusercontent.com/ministryofjustice/laa-schemas/main/prototyping/criminal-legal-aid/1.0.0/schemas/legal_aid_application.json
