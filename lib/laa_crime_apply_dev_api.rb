@@ -21,7 +21,7 @@ module LaaCrimeApplyDevApi
 
   OffenceSchema = Dry::Schema.Params do
     required(:class).value Types::String
-    required(:date).value Types::String
+    required(:date).value Types::JSON::Date
     required(:name).value Types::String
   end
 
@@ -46,6 +46,7 @@ module LaaCrimeApplyDevApi
     required(:id).value(Types::Uuid)
     required(:application_reference).value(Types::CrimeApplicationReference)
     required(:application_start_date).value(Types::DateTime)
+    required(:submission_date).value(Types::DateTime)
     required(:client_details).hash do
       required(:client).hash do
         required(:first_name).value Types::String
@@ -58,6 +59,7 @@ module LaaCrimeApplyDevApi
     required(:id).value(Types::Uuid)
     required(:application_reference).value(Types::CrimeApplicationReference)
     required(:application_start_date).value(Types::DateTime)
+    required(:submission_date).value(Types::DateTime)
 
     required(:client_details).hash do
       required(:client).hash do
@@ -65,26 +67,10 @@ module LaaCrimeApplyDevApi
         required(:first_name).value Types::String
         required(:last_name).value Types::String
         required(:national_insurance_number).value Types::String
+        required(:date_of_birth).value Types::JSON::Date
       end
     end
 
     required(:case_details).hash(CaseDetailsSchema)
   end
-  #  "interests_of_justice": [
-  #   {
-  #    "reason": "Client likely to receive custodial sentence",
-  #    "type": "liberty"
-  #   },
-  #   {
-  #    "type": "livelihood"
-  #   }
-  #  ],
-  #  "provider_details": {
-  #   "email": "mary@legal.com",
-  #   "firm": "Legal ABC",
-  #   "office": "London"
-  #  },
-  #  "provider_firm": "Legal ABC"
-  # }
-  #
 end

@@ -12,7 +12,7 @@ module Api
       def index
         crime_apps = CrimeApplication.all.limit(LIMIT)
 
-        render json: ApplicationSerializer.collection(crime_apps).select(&:valid?)
+        render json: ApplicationSerializer.collection(crime_apps, include_details: true).select(&:valid?)
       end
 
       # Shows schema errors if they exist
@@ -27,7 +27,6 @@ module Api
         end
       rescue ActiveRecord::RecordNotFound
         head :not_found
-      else
       end
     end
   end
