@@ -47,6 +47,7 @@ class ApplicationSerializer
       json.id crime_app.id
       json.application_reference "LAA-#{crime_app.id[0..5]}"
       json.application_start_date crime_app.updated_at.to_s
+      json.submission_date crime_app.updated_at.to_s
       json.client_details client_details_to_builder
       json.case_details case_details_to_builder if @include_details
     end
@@ -60,6 +61,7 @@ class ApplicationSerializer
         if @include_details
           json.national_insurance_number applicant&.nino
           json.address address_to_builder
+          json.date_of_birth applicant&.date_of_birth
         end
       end
     end
@@ -67,9 +69,9 @@ class ApplicationSerializer
 
   def case_details_to_builder
     Jbuilder.new do |json|
-      json.court_name kase.hearing_court_name
-      json.urn kase.urn
-      json.case_type kase.case_type
+      json.court_name kase&.hearing_court_name
+      json.urn kase&.urn
+      json.case_type kase&.case_type
       json.co_defendants(co_defendants, :first_name, :last_name, :conflict_of_interest)
       json.interests_of_justice(iojs, :reason, :type)
       json.offences(offences, :name, :date, :class)
@@ -78,10 +80,10 @@ class ApplicationSerializer
 
   def address_to_builder
     Jbuilder.new do |json|
-      json.address_line_one address.address_line_one
-      json.address_line_two address.address_line_two
-      json.postcode address.postcode
-      json.county address.country
+      json.address_line_one address&.address_line_one
+      json.address_line_two address&.address_line_two
+      json.postcode address&.postcode
+      json.county address&.country
     end
   end
 
@@ -90,6 +92,8 @@ class ApplicationSerializer
   end
 
   def co_defendants
+    return [] unless kase
+
     kase.codefendants
   end
 
@@ -100,6 +104,8 @@ class ApplicationSerializer
 
   # TODO: update when conflict btn schema and apply resolved
   def offences
+    return [] unless kase
+
     kase.charges.map do |charge|
       OpenStruct.new(name: charge.offence_name, date: '2001-01-01', class: 'CONFLICT IN DATA MODEL')
     end

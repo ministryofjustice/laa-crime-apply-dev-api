@@ -9,6 +9,7 @@ class NavigationTest < ActionDispatch::IntegrationTest
     applicant = stub(
       first_name: 'Zoe',
       last_name: 'Blogs',
+      date_of_birth: 30.years.ago,
       nino: 'QQ1223456B',
       home_address: OpenStruct.new
     )
@@ -30,7 +31,7 @@ class NavigationTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
-    assert_equal JSON.parse(response.body).first['id'], @uuid
+    assert_equal JSON.parse(response.body), []
   end
 
   test 'GET /api/applications/:id' do
