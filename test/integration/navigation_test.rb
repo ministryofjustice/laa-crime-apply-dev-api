@@ -10,7 +10,9 @@ class NavigationTest < ActionDispatch::IntegrationTest
       first_name: 'Zoe',
       last_name: 'Blogs',
       date_of_birth: 30.years.ago,
+      telephone_number: '0771231231',
       nino: 'QQ1223456B',
+      correspondence_address_type: 'home_address',
       home_address: OpenStruct.new
     )
 
