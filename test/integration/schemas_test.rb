@@ -4,7 +4,7 @@ require 'test_helper'
 
 class SchemataTest < ActionDispatch::IntegrationTest
   test 'GET /api/schemata/application.json' do
-    get '/api/schemata/application.json'
+    get '/api/schemas/application.json'
 
     assert_response :success
 
@@ -14,7 +14,7 @@ class SchemataTest < ActionDispatch::IntegrationTest
   end
 
   test 'GET /api/schemata/case_details_schema.json' do
-    get '/api/schemata/case_details.json'
+    get '/api/schemas/case_details.json'
 
     assert_response :success
 
@@ -23,7 +23,7 @@ class SchemataTest < ActionDispatch::IntegrationTest
   end
 
   test 'GET /api/schemata/not_a_schema.json' do
-    get '/api/schemata/not_a_schema.json'
+    get '/api/schemas/not_a_schema.json'
 
     assert_response :not_found
   end

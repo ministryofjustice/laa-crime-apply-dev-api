@@ -3,7 +3,7 @@
 module Api
   module V1
     # Shows api schema in json-schema format
-    class SchemataController < ActionController::API
+    class SchemasController < ActionController::API
       def show
         case params[:id]
         when 'application'
