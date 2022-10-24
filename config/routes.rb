@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   namespace :api, format: :json do
     scope module: :v1, constraints: ApiConstraint.new do
       resources :applications, format: :json, only: %i[index show]
+      resources :schemata, format: :json, only: %i[show]
     end
   end
 end

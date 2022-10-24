@@ -6,6 +6,8 @@ require 'laa_crime_apply_dev_api/types'
 require 'dry-schema'
 
 module LaaCrimeApplyDevApi
+  Dry::Schema.load_extensions(:json_schema)
+
   AddressSchema = Dry::Schema.Params do
     required(:address_line_one).value(Types::String)
     required(:address_line_two).value(Types::String)
@@ -32,35 +34,20 @@ module LaaCrimeApplyDevApi
 
   CaseDetailsSchema = Dry::Schema.Params do
     required(:case_type).value Types::CaseType
-    # required(:court_type).value Types::String
     required(:co_defendants).array(CoDefendantSchema)
     required(:offences).array(OffenceSchema)
     required(:hearing_court_name).value Types::String
-    required(:hearing_date).maybe(Types::Date)
+    required(:hearing_date).maybe(Types::JSON::Date)
 
     required(:urn).value Types::String
-  end
-
-  ApplicationListItemSchema = Dry::Schema.Params do
-    required(:id).value(Types::Uuid)
-    required(:application_reference).value(Types::CrimeApplicationReference)
-    required(:application_start_date).value(Types::DateTime)
-    required(:submission_date).value(Types::DateTime)
-    required(:client_details).hash do
-      required(:client).hash do
-        required(:first_name).value Types::String
-        required(:last_name).value Types::String
-      end
-    end
   end
 
   ApplicationSchema = Dry::Schema.Params do
     required(:id).value(Types::Uuid)
     required(:application_reference).value(Types::CrimeApplicationReference)
-    required(:application_start_date).value(Types::DateTime)
+    required(:application_start_date).value(Types::JSON::DateTime)
     required(:application_type).value Types::String.default('initial_application')
-    required(:submission_date).value(Types::DateTime)
-
+    required(:submission_date).value(Types::JSON::DateTime)
     required(:client_details).hash do
       required(:client).hash do
         required(:address).hash(AddressSchema)
