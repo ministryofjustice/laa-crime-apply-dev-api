@@ -20,13 +20,15 @@ class NavigationTest < ActionDispatch::IntegrationTest
       id: @uuid,
       updated_at: 1.day.ago,
       applicant: applicant,
-      case: OpenStruct.new(codefendants: [], charges: [])
+      case: OpenStruct.new(codefendants: [], charges: []),
+      date_stamp: 1.day.ago,
+      submitted_at: 1.second.ago
     )
   end
 
   test 'GET /api/applications' do
-    CrimeApplication.expects(:all).returns(
-      stub(limit: [@crime_application])
+    CrimeApplication.expects(:where).returns(
+      stub(not: stub(limit: [@crime_application]))
     )
 
     get '/api/applications'

@@ -45,7 +45,7 @@ module LaaCrimeApplyDevApi
   class Types
     include Dry.Types()
 
-    DateTime = Strict::DateTime | JSON::DateTime
+    DateTime = JSON::DateTime
     CorrespondenceAddressType = String.enum(*CORRESPONDENCE_ADDRESS_TYPES)
     OffenceClass = String.enum(*OFFENCE_CLASSES)
     CaseType = String.enum(*CASE_TYPES)

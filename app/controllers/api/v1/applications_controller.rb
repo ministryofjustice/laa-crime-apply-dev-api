@@ -10,7 +10,7 @@ module Api
       # Omits any records that do not satisfy schema
       #
       def index
-        crime_apps = CrimeApplication.all.limit(LIMIT)
+        crime_apps = CrimeApplication.where.not(submitted_at: nil).limit(LIMIT)
 
         render json: ApplicationSerializer.collection(crime_apps).select(&:valid?)
       end

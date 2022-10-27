@@ -38,8 +38,8 @@ class ApplicationSerializer
     Jbuilder.new do |json|
       json.id crime_app.id
       json.application_reference "LAA-#{crime_app.id[0..5]}"
-      json.application_start_date crime_app.updated_at.to_s
-      json.submission_date crime_app.updated_at.to_s
+      json.application_start_date crime_app.date_stamp.to_s
+      json.submission_date crime_app.submitted_at.to_s
       json.client_details client_details_to_builder
       json.case_details case_details_to_builder
       json.interests_of_justice(iojs_as_an_array, :reason, :type)
